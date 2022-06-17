@@ -2,62 +2,65 @@ const axios = require('axios')
 
 let getWeather = async function(req,res){
     try{
-        let city = req.query.q
-        let key = req.query.appid
-        if(city && key){
+        let loc = req.query.location
+        let apiId = req.query.apiId
+       
+            console.log(loc)
         let options = {
-            method: "GET",
-            url: `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}`
+            method: "get",
+            url: `http://api.openweathermap.org/data/2.5/weather?q=${loc}&appid=${apiId}`
         }
-        let result = await axios(options)
-        res.status(200).send({status:true, msg: result.data})
-    }else{
-        res.status(400).send({status: false, msg: "Please provide valid city or key"})
+        let result = await axios(options);
+        let data = result.data
+        res.status(200).send({msg: data, status: true})
     }
-
-    }catch (error){
-        res.status(500).send({error: error.message})
+  
+    catch (err){
+        res.status(500).send({msg: err.message})
     }
 }
 
+
 let tempOfLondon = async function(req,res){
     try{
-        let city = "London"
-        let key = req.query.appid
-        if(key){
+        let loc = req.query.location
+        let apiId = req.query.apiId
+        console.log(loc)
         let options = {
-            method: "GET",
-            url: `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}`
+            method: "get",
+            url: `http://api.openweathermap.org/data/2.5/weather?q=${loc}&appid=${apiId}`
         }
-        let result = await axios(options)
-        res.status(200).send({status:true, msg: result.data.main.temp})
-    }else{
-        res.status(400).send({status: false, msg: "Please provide valid  key"})
+        let result = await axios(options);
+        let data = result.data
+        let londonTemp = data.main.temp
+        res.status(200).send({location: loc,
+        temparature: londonTemp})
     }
-
-    }catch (error){
-        res.status(500).send({error: error.message})
+        
+    
+    catch (err){
+        res.status(500).send({msg: err.message})
     }
 }
 
 
 let tempOfCities = async function(req,res){
     try{
-        let cities = ["Bengaluru","Mumbai", "Delhi", "Kolkata", "Chennai", "London", "Moscow"]
-        let key = req.query.appid
-        if(key){
+        let loc = ["Bengaluru","Mumbai", "Delhi", "Kolkata", "Chennai", "London", "Moscow"]
+        let apiId = req.query.apiId
+        if(apiId){
 
             let temp = []
             let temp1= []
-            for(let i=0; i<cities.length; i++){
+            for(let i=0; i<loc.length; i++){
                 
                 let options = {
-                    method : "GET",
-                    url : `http://api.openweathermap.org/data/2.5/weather?q=${cities[i]}&appid=${key}`
+                    method : "get",
+                    url : `http://api.openweathermap.org/data/2.5/weather?q=${loc[i]}&appid=${apiId}`
                 }
                 let result = await axios (options)
                 let tempOfCity = result.data.main.temp
-                temp.push([cities[i] , tempOfCity] )
+                temp.push([loc[i] , tempOfCity] )
                 temp1.push(tempOfCity)
                 
             }
@@ -69,11 +72,11 @@ let tempOfCities = async function(req,res){
             for(let j=0;j<sortAccordingToTemp.length;j++){
                 const element = sortAccordingToTemp[j]
                 let obj={}
-                obj["city"]=element[0]
+                obj["loc"]=element[0]
                 obj["temp"]=element[1]
                 arr.push(obj)
             }
-               
+               console.log(arr)
             res.status(200).send({status: true, msg: arr})
         }else{
             res.status(400).send({status: false, msg: "please provide valid key"})

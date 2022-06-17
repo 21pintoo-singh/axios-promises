@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { url } = require('inspector')
 
 let getMemes = async function(req, res){
 
@@ -9,8 +10,10 @@ try{
     }
     let result = await axios(options)
     res.status(200).send({status: true, msg: result.data})
+    console.log(result);
 }catch(error){
     res.status(500).send({error: error.message})
+    
 }
 }
 
